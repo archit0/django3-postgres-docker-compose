@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:9.6.5
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+      - .:/application
+    ports:
+      - "5432:5432"
+  web:
+    build: .
+    working_dir: /application/server
+    # env_file:
+    #  - server/config/settings/.env
+    command: "tail -f /dev/null"
+    # command: ["python", "manage.py", "runserver", "0:8111"]
+    volumes:
+      - .:/application
+      - app-python-site-packages:/usr/local/lib/python3.8/site-packages
+      - app-usr-local-bin:/usr/local/bin
+      - ~/.ssh:/root/.ssh
+    ports:
+      - "8111:8111"
+    depends_on:
+      - db
+
+
+volumes:
+  app-python-site-packages:
+    driver: local
+  psql-data:
+    driver: local
+  app-usr-local-bin:
+    driver: local
